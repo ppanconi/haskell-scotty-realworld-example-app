@@ -1,0 +1,38 @@
+{
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+
+  "hostRequirements": {
+    "cpus": 4
+  },
+
+  "features": {
+     "ghcr.io/devcontainers-contrib/features/haskell:2": {},
+     "ghcr.io/devcontainers/features/docker-in-docker:2": {
+     	"version": "latest",
+        "enableNonRootDocker": "true",
+        "moby": "true"
+     },
+  },
+
+  "remoteUser": "vscode",
+
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "terminal.integrated.profiles.linux": {
+          "bash": {
+            "path": "/bin/bash"
+          }
+        },
+        "terminal.integrated.defaultProfile.linux": "bash"
+      },
+      "extensions": [
+        "bbenoist.nix",
+        "haskell.haskell",
+        "s0kil.vscode-hsx",
+        "mkhl.direnv",
+        "vigoo.stylish-haskell"
+      ]
+    }
+  }
+}

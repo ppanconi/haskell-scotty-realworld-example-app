@@ -5,7 +5,7 @@
     "poolSize": 4,
     "maxIdleTime": 60,
     "numStripes": 1,
-    "truncTables": true
+    "truncTables": false
   },
   "jwt": {
     "secret": "supersecretsecret",

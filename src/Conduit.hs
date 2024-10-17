@@ -15,6 +15,7 @@ import Conduit.Identity.JWT (JWTOps(..), mkJWTInfo)
 import Database.PostgreSQL.Simple (SqlError)
 import Network.HTTP.Types (status500)
 import Network.Wai.Middleware.RequestLogger (logStdout, logStdoutDev)
+import Network.Wai.Middleware.Cors
 import Network.Wai.Middleware.Static (CachingStrategy(..), addBase, cacheContainer, hasPrefix, initCaching, staticPolicyWithOptions)
 import Network.Wai.Middleware.Static qualified as Static
 import Web.Scotty.Trans (Handler(..), defaultHandler, middleware, scottyT, status)
@@ -34,6 +35,7 @@ main ConduitOps {..} = do
   putStrLn $ fold ["Running in '", show env.envType, "'"]
 
   when (env.envType == Development) do
+    putStrLn "init DB..."
     initDB env.envDBPool dbConnOps
 
   cache <- initCaching PublicStaticCaching
@@ -41,13 +43,18 @@ main ConduitOps {..} = do
   scottyT port runAppToIO do
     defaultHandler $ Handler \(e :: SqlError) -> do -- temp for debugging reasons
       print e >> status status500
-    
+
     middleware $ loggerFor env.envType
 
     middleware $ staticPolicyWithOptions (staticOps cache) policy
-    
+
+    middleware $ cors (const $ Just appCors )
+
     applicationHandlers
   where
+    appCors = simpleCorsResourcePolicy { corsOrigins = Nothing
+                                       , corsMethods = ["OPTIONS", "GET", "PUT", "POST"]
+                                       , corsRequestHeaders = ["Authorization", "Content-Type"] }
     defaultEnv = Env
       <$> mkDBPool dbConnOps
       <*> pure (mkJWTInfo jwtOps)

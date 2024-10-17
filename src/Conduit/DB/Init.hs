@@ -15,7 +15,7 @@ data PGConnOps = PGConnOps
   , connTimeout :: !Int
   , connStripes :: !Int
   , truncTables :: !Bool
-  } deriving (Read)
+  } deriving (Read, Show)
 
 mkPoolConfig :: PGConnOps -> PostgresConf
 mkPoolConfig ops = PostgresConf
@@ -30,6 +30,7 @@ mkDBPool = liftIO . fmap DBPool . createPoolConfig . mkPoolConfig
 
 initDB :: (MonadUnliftIO m) => DBPool -> PGConnOps -> m ()
 initDB (DBPool pool) ops = flip runSqlPool pool do
+  print ops
   when ops.truncTables resetTables
   runMigrations
   runDBFunctions
@@ -47,6 +48,7 @@ resetTables = flip rawExecute [] $
 
 runMigrations :: (MonadIO m) => SqlPersistT m ()
 runMigrations = do
+  putStrLn "runnning migrations..."
   runMigration migrateAccountTables
   runMigration migrateArticleTables
 

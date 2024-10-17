@@ -103,12 +103,13 @@ library
         , postgresql-simple
         , relude >=1.2.0.0
         , resource-pool
-        , scotty
+        , scotty == 0.20.1
         , template-haskell
         , text
         , time
         , unliftio
         , wai-extra
+        , wai-cors
         , wai-middleware-static
     mixins:
           base hiding (Prelude)
@@ -141,7 +142,7 @@ executable app
           TypeFamilies
           GADTs
           ViewPatterns
-    ghc-options: -Wall -Wno-orphans -Wno-unrecognised-pragmas -O1
+    ghc-options: -threaded -Wall -Wno-orphans -Wno-unrecognised-pragmas -O1
     build-depends:
           aeson
         , base >=4.16.4.0
