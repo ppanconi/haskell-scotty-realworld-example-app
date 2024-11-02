@@ -34,5 +34,8 @@
         "vigoo.stylish-haskell"
       ]
     }
-  }
+  },
+
+  "postCreateCommand": "sudo apt update && sudo apt -y install libpq-dev"
+
 }
