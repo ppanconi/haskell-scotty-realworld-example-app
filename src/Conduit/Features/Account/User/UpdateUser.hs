@@ -42,7 +42,7 @@ handleUpdateUser = put "/api/user" $ withAuth \user -> do
 
 updateUser :: (PasswordGen m, AuthTokenGen m, AcquireUser m, ReadUsers m, UpdateUser m) => AuthedUser -> UpdateUserAction -> m (Either AccountError UserAuth)
 updateUser user@AuthedUser {..} action@UpdateUserAction {..} = runExceptT do
-  ExceptT $ ensureUserCredsUnique username email
+  ExceptT $ ensureUserCredsUnique username email (Just authedUserID)
   maybeNewPW <- mapM (lift . hashPassword) password
   ExceptT $ updateUserByID authedUserID $ mkToUpdate action maybeNewPW
   ExceptT $ getUser user

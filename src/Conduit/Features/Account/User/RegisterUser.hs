@@ -42,7 +42,7 @@ defaultImage = "https://api.realworld.io/images/smiley-cyrus.jpeg"
 
 registerUser :: (PasswordGen m, AuthTokenGen m, CreateUser m, ReadUsers m) => RegisterUserAction -> m (Either AccountError UserAuth)
 registerUser RegisterUserAction {..} = runExceptT do
-  ExceptT $ ensureUserCredsUnique (Just username) (Just email)
+  ExceptT $ ensureUserCredsUnique (Just username) (Just email) Nothing
 
   hashedPass <- lift $ hashPassword password
 
