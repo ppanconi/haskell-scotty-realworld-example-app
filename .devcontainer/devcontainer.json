@@ -12,6 +12,7 @@
         "enableNonRootDocker": "true",
         "moby": "true"
      },
+     "ghcr.io/devcontainers/features/node:1": {}
   },
 
   "remoteUser": "vscode",
