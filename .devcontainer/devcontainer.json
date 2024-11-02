@@ -30,7 +30,6 @@
         "bbenoist.nix",
         "haskell.haskell",
         "s0kil.vscode-hsx",
-        "mkhl.direnv",
         "vigoo.stylish-haskell"
       ]
     }
