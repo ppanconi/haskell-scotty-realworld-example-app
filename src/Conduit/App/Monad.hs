@@ -9,8 +9,8 @@ import Conduit.Errors (FeatureError, handleFeatureErrors)
 
 -- | The app monad. woo.
 newtype AppM a = AppM
-  { runAppM :: ReaderT Env IO a
-  } deriving newtype (Functor, Applicative, Monad, MonadIO, MonadReader Env, MonadUnliftIO)
+  { runAppM :: ReaderT (Env AppM) IO a
+  } deriving newtype (Functor, Applicative, Monad, MonadIO, MonadReader (Env AppM), MonadUnliftIO)
 
 -- | Lifts computations to the app monad level. @(MonadApp m)@ shouldn't be used directly as a constraint;
 --   Rather, just use @liftApp@ and see 'Conduit.App.Has.Has'.

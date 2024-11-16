@@ -16,9 +16,13 @@ import Database.PostgreSQL.Simple (SqlError)
 import Network.HTTP.Types (status500)
 import Network.Wai.Middleware.RequestLogger (logStdout, logStdoutDev)
 import Network.Wai.Middleware.Cors
+    ( cors,
+      simpleCorsResourcePolicy,
+      CorsResourcePolicy(corsRequestHeaders, corsOrigins, corsMethods) )
 import Network.Wai.Middleware.Static (CachingStrategy(..), addBase, cacheContainer, hasPrefix, initCaching, staticPolicyWithOptions)
 import Network.Wai.Middleware.Static qualified as Static
 import Web.Scotty.Trans (Handler(..), defaultHandler, middleware, scottyT, status)
+import Colog (richMessageAction)
 
 data ConduitOps = ConduitOps
   { port      :: Int
@@ -59,6 +63,7 @@ main ConduitOps {..} = do
       <$> mkDBPool dbConnOps
       <*> pure (mkJWTInfo jwtOps)
       <*> pure envType
+      <*> pure richMessageAction
 
     loggerFor = \case
       Development -> logStdoutDev

@@ -1,4 +1,5 @@
 {-# LANGUAGE UndecidableInstances #-}
+{-# LANGUAGE PatternSynonyms #-}
 
 module Conduit.Features.Account.User.LoginUser where
 
@@ -16,6 +17,7 @@ import Database.Esqueleto.Experimental (Entity(..), from, selectOne, val, (==.))
 import Database.Esqueleto.Experimental.From (table)
 import UnliftIO (MonadUnliftIO)
 import Web.Scotty.Trans (ScottyT, json, post)
+import Colog (WithLog, Message, log, pattern I)
 
 data LoginUserAction = LoginUserAction
   { password :: UnsafePassword
@@ -33,17 +35,18 @@ handleUserLogin = post "/api/users/login" do
   userAuth <- runService $ tryLoginUser action
   json $ inUserObj userAuth
 
-tryLoginUser :: (MonadIO m, AcquireUser m, AuthTokenGen m) => LoginUserAction -> m (Either AccountError UserAuth)
-tryLoginUser LoginUserAction {..} = runExceptT do
-  user <- ExceptT $ findUserByEmail email
+tryLoginUser :: (MonadIO m, AcquireUser m, AuthTokenGen m, WithLog env Message m) => LoginUserAction -> m (Either AccountError UserAuth)
+tryLoginUser LoginUserAction {..} = do 
+  log I "TRY TO LOGIN >>>>>>>>>>>>>"
+  runExceptT do
+    user <- ExceptT $ findUserByEmail email
+    let isValidPassword = testPassword password user.pass
 
-  let isValidPassword = testPassword password user.pass
+    either' <- lift $ if isValidPassword
+      then Right <$> createUserAuth user
+      else pure . Left $ BadLoginCredsEx
 
-  either' <- lift $ if isValidPassword
-    then Right <$> createUserAuth user
-    else pure . Left $ BadLoginCredsEx
-
-  ExceptT $ pure either'
+    ExceptT $ pure either'
 
 createUserAuth :: (AuthTokenGen m) => UserInfo -> m UserAuth
 createUserAuth userInfo = do

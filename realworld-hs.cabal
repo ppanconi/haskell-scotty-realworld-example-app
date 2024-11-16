@@ -111,6 +111,7 @@ library
         , wai-extra
         , wai-cors
         , wai-middleware-static
+        , co-log
     mixins:
           base hiding (Prelude)
         , relude (Relude as Prelude)
